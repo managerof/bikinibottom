@@ -128,6 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="screen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="linux.h" />
+    <ClInclude Include="macos.h" />
+    <ClInclude Include="screen.h" />
+    <ClInclude Include="platform.h" />
+    <ClInclude Include="windows.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
