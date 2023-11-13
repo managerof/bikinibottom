@@ -1,1 +1,1 @@
-![Bikini Bottom Icon](bikinibottom\bikinibottom\sweet_memory\testing.png)
+![Bikini Bottom Icon](bikinibottom/sweet_memory/testing.png)
