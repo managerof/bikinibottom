@@ -29,10 +29,7 @@
     <ClInclude Include="screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="linux.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="macos.h">
+    <ClInclude Include="Windows\windows_mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

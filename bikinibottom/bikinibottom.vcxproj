@@ -131,10 +131,9 @@
     <ClCompile Include="Windows\screen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="linux.h" />
-    <ClInclude Include="macos.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="platform.h" />
+    <ClInclude Include="Windows\windows_mode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
