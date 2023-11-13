@@ -1,6 +1,8 @@
 #include <vector>
 #include "platform.h"
 #include <string>
+#include <thread>
+#include <atomic>
 
 #pragma once
 
@@ -10,84 +12,55 @@
 // Forward declaration of the Screen class
 class Screen {
 public:
-    Screen(int width, int height);
+    int Width;
+    int Height;
+
+    Screen();
     ~Screen();
 
     void SetChar(int x, int y, char character);
-    //void SetBuffer(const std::vector<std::vector<char>>& characters);
-    //void SetBuffer(const std::vector<char>& characters);
     void ClearScreen();
     void Update();
+    void SetTitle(const char* title);
+    void SetCustomConsoleIcon(const char* iconFilePath);
+    void Start();
 
-    int GetWidth() const {
-        return Width;
-    }
-
-    int GetHeight() const {
-        return Height;
-    }
-
-private:
+// WINDOWS specific console handle functions
 #ifdef _WIN32
-    HANDLE hConsole;
     void ShowConsoleCursor(bool showFlag);
     void MoveCursor(int x, int y);
+
+    bool ReadConsoleInput(INPUT_RECORD* irInBuf, DWORD nNumInputs, DWORD& cNumRead);
+    void KeyEventProc(KEY_EVENT_RECORD ker);
+    void MouseEventProc(MOUSE_EVENT_RECORD mer);
+    void ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD wbsr);
+
+    void ProcessMouseEvent(MOUSE_EVENT_RECORD mer);
+
+    void ErrorExit(LPCSTR lpszMessage);
+
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hStdin;
+    HWND hWindow = GetConsoleWindow();
+
+    void StartBackgroundInputThread();
+
+    void StopBackgroundInputThread();
+
+    std::atomic<bool> stopThread{false};
+    std::thread inputThread;
+    void BackgroundInputThread();
+
+    DWORD fdwSaveOldMode;
 #endif
     
-    int Width;
-    int Height;
     std::string Buffer;
 };
 
-Screen* CreateScreen(int width, int height);
+Screen* CreateScreen();
 
 #endif // SCREEN_H
 
-
-
-
-
-/*
-#include <iostream>
-#include <Windows.h>
-
-BOOL CtrlHandler(DWORD ctrlType) {
-    switch (ctrlType) {
-    case CTRL_C_EVENT:
-        std::cout << "Ctrl+C received. Exiting..." << std::endl;
-        // Handle Ctrl+C event
-        return TRUE;
-
-    case CTRL_BREAK_EVENT:
-        std::cout << "Ctrl+Break received. Exiting..." << std::endl;
-        // Handle Ctrl+Break event
-        return TRUE;
-
-    default:
-        return FALSE;
-    }
-}
-
-int main() {
-    // Set the console control handler
-    if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)) {
-        std::cout << "Press Ctrl+C or Ctrl+Break to trigger console events." << std::endl;
-
-        // Keep the program running
-        while (true) {
-            // Wait for console input events
-            INPUT_RECORD input;
-            DWORD events;
-            ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &events);
-
-            // Process input events if needed
-        }
-    }
-    else {
-        std::cerr << "Error setting console control handler." << std::endl;
-        return 1;
-    }
-
-    return 0;
-}
-*/
+#ifdef _WIN32
+BOOL CtrlHandler(DWORD ctrlType);
+#endif
