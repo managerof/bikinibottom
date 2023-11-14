@@ -3,17 +3,22 @@
 #include <string>
 #include <thread>
 #include <atomic>
+#include "Engine/tools.h"
 
 #pragma once
 
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#define DEFAULT_SCREEN_BUFFER_WIDTH 120
+#define DEFAULT_SCREEN_BUFFER_HEIGHT 30
+
 // Forward declaration of the Screen class
 class Screen {
 public:
     int Width;
     int Height;
+    int BufferCapacity;
 
     Screen();
     ~Screen();
@@ -24,6 +29,11 @@ public:
     void SetTitle(const char* title);
     void SetCustomConsoleIcon(const char* iconFilePath);
     void Start();
+    void ResizeBuffer(int width, int height);
+    void DrawEntity(const std::string& entity, int X, int Y);
+    Vec2Int GetConsoleBufferSize();
+    int ToBufferCoords(int X, int Y);
+    void PaintString(int x, int y, const std::string& text, WORD textColor, WORD backgroundColor);
 
 // WINDOWS specific console handle functions
 #ifdef _WIN32
@@ -42,6 +52,9 @@ public:
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE hStdin;
     HWND hWindow = GetConsoleWindow();
+    WORD originalAttributes;
+
+    void ResizeConsoleBuffer(int columns, int rows);
 
     void StartBackgroundInputThread();
 
