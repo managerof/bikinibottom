@@ -34,10 +34,10 @@ Screen::Screen() : Buffer((DEFAULT_SCREEN_BUFFER_WIDTH+1) * DEFAULT_SCREEN_BUFFE
     // 
     // Populate the buffer with newline characters at appropriate positions
     for (int i = 0; i < DEFAULT_SCREEN_BUFFER_HEIGHT; i++) {
-        Buffer[(DEFAULT_SCREEN_BUFFER_WIDTH + 1) * i + DEFAULT_SCREEN_BUFFER_WIDTH] = '\n';
+        //Buffer[(DEFAULT_SCREEN_BUFFER_WIDTH + 1) * i + DEFAULT_SCREEN_BUFFER_WIDTH] = '\n';
     }
 
-    Width = DEFAULT_SCREEN_BUFFER_WIDTH;
+    Width = DEFAULT_SCREEN_BUFFER_WIDTH-1;
     Height = DEFAULT_SCREEN_BUFFER_HEIGHT;
 
     BufferCapacity = Buffer.length();
@@ -48,7 +48,7 @@ void Screen::ResizeBuffer(int width, int height)
     Buffer.resize((width + 1) * height, ' ');
 
     for (int i = 0; i < height; i++) {
-        Buffer[TransformCoord(width, i, width + 1)] = '\n';
+        //Buffer[TransformCoord(width, i, width + 1)] = '\n';
     }
 }
 
@@ -73,11 +73,9 @@ void Screen::StopBackgroundInputThread() {
 
 void Screen::DrawEntity(const std::string& entity, int X, int Y) {
     if (BufferCapacity < entity.length()) {
-        std::cerr << "entity length is greater than the buffer length";
+        std::cerr << "Entity length is greater than the buffer length.\n";
         return;
     }
-
-    Y = Y + 1;
 
     int row = 0;
     int column = 0;
@@ -85,11 +83,12 @@ void Screen::DrawEntity(const std::string& entity, int X, int Y) {
     for (char ch : entity) {
         if (ch == '\n') {
             row++;
-            column = 0;
+            column = 0;  // Reset column position for the next row
             continue;
         }
 
-        if (X + column > Width - 1 or Y * row > Height) {
+        if (X + column >= Width || Y + row >= Height) {
+            // Skip drawing if it goes beyond the screen boundaries
             column++;
             continue;
         }
@@ -98,6 +97,7 @@ void Screen::DrawEntity(const std::string& entity, int X, int Y) {
         column++;
     }
 }
+
 
 void Screen::PaintString(int x, int y, const std::string& text, WORD textColor, WORD backgroundColor) {
     COORD coord = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
@@ -238,9 +238,9 @@ void Screen::MoveCursor(int x, int y) {
 }
 
 void Screen::Update() {
-    MoveCursor(0, 0);
-
-    std::cout << Buffer;
+    DWORD lpNumberOfCharsWritten;
+        
+    WriteConsoleOutputCharacterA(hConsole, Buffer.c_str(), static_cast<DWORD>(Buffer.length()), { 0, 0 }, &lpNumberOfCharsWritten);
 }
 
 void Screen::ResizeConsoleBuffer(int columns, int rows) {
@@ -335,11 +335,11 @@ void Screen::ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD wbsr)
 }
 
 
-void Screen::ClearScreen() {
+void Screen::ClearBuffer() {
     // Clear the buffer with spaces
     for (int i = 0; i < Height; ++i) {
         for (int j = 0; j < Width; ++j) {
-            Buffer[i * Width + j] = ' ';
+            Buffer[ToBufferCoords(j, i)] = ' ';
         }
     }
 }

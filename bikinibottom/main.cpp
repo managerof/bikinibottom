@@ -19,14 +19,17 @@ int main() {
     s->DrawEntity(player.skin, 0, 0);
 
     std::string penis = { 'O', '\n',
-                         ' ', '=', '=', '=', '=', '8', '\n',
-                         'O', '\n' };
+                          ' ', '=', '=', '=', '=', '8', '\n',
+                          'O', '\n' };
 
     s->DrawEntity(penis, 20, 9);
 
     while (1) {
+        s->ClearBuffer();
+        s->DrawEntity(penis, 20, 9);
+        s->DrawEntity(player.skin, 0, 0);
+        s->DrawEntity("Hello\nWorld!\nJamala!!!2", 9, 20);
         s->Update();
-        Sleep(50);
     }
 
     // Clean up
