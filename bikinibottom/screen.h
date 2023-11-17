@@ -24,7 +24,7 @@ public:
     ~Screen();
 
     void SetChar(int x, int y, char character);
-    void ClearScreen();
+    void ClearBuffer();
     void Update();
     void SetTitle(const char* title);
     void SetCustomConsoleIcon(const char* iconFilePath);
